@@ -1,13 +1,15 @@
 import express, { json, Request, Response } from 'express';
 import cors from 'cors';
 import movieRoutes from './Routes/movieRoutes';
+import dotenv from 'dotenv'
 
 
 const server = express();
+dotenv.config()
 server.use(json())
 server.use(express.urlencoded({ extended: true }))
 server.use(cors())
-const PORT = 3001
+const PORT = process.env.PORT || 3000
 
 server.use(movieRoutes)
 
