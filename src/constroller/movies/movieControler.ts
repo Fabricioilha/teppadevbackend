@@ -32,7 +32,6 @@ class MovieController{
         try {
             const querySnapshot = await getDocs(collection(db, "filmes"));
             querySnapshot.forEach((doc) => {
-                //filme:doc.data(), id: doc.id
                 data.push({id: doc.id, data: doc.data(), message:"Consulta realizada com sucesso"})
             });
             return res.json({status: 1, data })
@@ -40,15 +39,14 @@ class MovieController{
             return res.status(500).json({status: 0, message: "Não conseguiu realizar a consulta",error})
         }
     }
-    postMovie = async (req: Request, res: Response) =>{ // Cadastra um novo filme na coleção
+    CreateMovie = async (req: Request, res: Response) =>{ // Cadastra um novo filme na coleção
         try{
-            const {nome, ano} = req.body
+            const {nome, ano, critica} = req.body
             const numberAno = Number(ano)
-            if(numberAno && nome){
+            if(numberAno && nome && critica){
                 const filmesRef = collection(db, "filmes");
-                await setDoc(doc(filmesRef), {nome: nome, ano: numberAno})
+                await setDoc(doc(filmesRef), {nome: nome, ano: numberAno, critica: critica})
                 return res.status(200).json({status: 1, message:"Filme cadastrado com sucesso"})  
-
             }else{
                 return res.status(404).json({status: 0, message:"ID ou Nome não foi informado"})
             }
@@ -56,16 +54,17 @@ class MovieController{
             return res.status(500).json({status: 0, message: "Não conseguiu realizar a consulta",error})            
         }
     }
-    putMovie = async (req: Request, res: Response) =>{ // Altera um filme na coleção de acordo com o ID
+    updateMovie = async (req: Request, res: Response) =>{ // Altera um filme na coleção de acordo com o ID
         try {
             const {id} = req.params
-            const {nome, ano} = req.body
-            if(id && nome && ano){
+            const {nome, ano, critica} = req.body
+            if(id && nome && ano && critica){
                 if(await verificaId(id)){ // verifica se tem alguem com este ID no banco de dados
                     const fillme = doc(db, "filmes", id);                    
                     await updateDoc(fillme, {
                         nome: nome,
-                        ano: ano
+                        ano: ano,
+                        critica
                     });
                     return res.json({status:1, message:"Atualizado com sucesso!"})                      
                 }else{
@@ -91,7 +90,6 @@ class MovieController{
         } catch (error) {
             return res.status(500).json({status: 0, message: "Não conseguiu realizar a consulta",error})
         }
-    }
-    
+    }   
 }
 export const moviecontroller = new MovieController()
